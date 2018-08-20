@@ -31,5 +31,4 @@ To install required packages issue following command.
 
 To run the application issue following command.
 
-    R> library('devtools')
-    R> runApp('maps')
+    R> runApp('map')
