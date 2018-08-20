@@ -1,0 +1,76 @@
+input[type="number"] {
+  max-width: 80%;
+}
+
+div.outer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+  padding: 0;
+}
+
+/* Customize fonts */
+body, label, input, button, select {
+  font-family: 'Helvetica Neue', Helvetica;
+  font-weight: 200;
+}
+
+select {
+  background-color: transparent;
+}
+
+h1, h2, h3, h4 { font-weight: 400; }
+
+#surface, #item, #category {
+  background-color: transparent;
+}
+
+
+#plot-controls {
+  /* Appearance */
+  background-color: transparent;
+  padding: 0 20px 20px 20px;
+  cursor: move;
+  /* Fade out while not hovering */
+  opacity: 1.0;
+  zoom: 0.9;
+  transition: opacity 500ms 1s;
+}
+#plot-controls:hover {
+  /* Fade in while hovering */
+  background-color: white;
+  opacity: 0.9;
+  transition-delay: 0;
+}
+
+#spot-controls {
+  /* Appearance */
+  background-color: transparent;
+  padding: 0 10px 0 10px;
+  cursor: move;
+  /* Fade out while not hovering */
+  opacity: 1.0;
+  zoom: 1.0;
+  transition: opacity 500ms 1s;
+}
+#spot-controls:hover {
+  /* Fade in while hovering */
+  background-color: white;
+  opacity: 0.9;
+  transition-delay: 0;
+}
+/* Position and style citation */
+#cite {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  font-size: 12px;
+}
+
+/* If not using map tiles, show a white background */
+.leaflet-container {
+  background-color: black !important;
+}
