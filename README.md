@@ -36,6 +36,7 @@ To install required packages issue following command.
     R> install.packages('htmltools')
     R> install.packages('htmlwidgets')
     R> install.packages('yaml')
+    R> install.packages('rjson')
     R> install.packages('devtools')
     R> devtools::install_github('misasa/chelyabinsk')
     R> devtools::install_github('misasa/MedusaRClient')
@@ -44,4 +45,5 @@ To run the application issue following command.
     
     $ R
     R> library(shiny)
+    R> global_id <- '20150916080446-153762'
     R> runApp('map')
