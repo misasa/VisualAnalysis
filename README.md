@@ -30,7 +30,7 @@ To setup VisualAnalysis issue following command.
 
 To install required packages issue following command.
     
-    $ R
+    $ sudo R
     R> install.packages('shiny')
     R> install.packages('leaflet')
     R> install.packages('htmltools')
