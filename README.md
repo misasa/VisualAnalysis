@@ -22,14 +22,28 @@ This app uses [Leaflet][leaflet], which is the leading open-source JavaScript li
 
 # User's guide
 
-To install required packages issue following command.
+To setup VisualAnalysis issue following command.
 
+    $ git clone https://github.com/misasa/VisualAnalysis.git
+    $ cd VisualAnalysis
+    $ cp config/medusa.yaml.default config/medusa.yaml
+
+To install required packages issue following command.
+    
+    $ sudo R
     R> install.packages('shiny')
+    R> install.packages('leaflet')
+    R> install.packages('htmltools')
+    R> install.packages('htmlwidgets')
+    R> install.packages('yaml')
+    R> install.packages('rjson')
     R> install.packages('devtools')
     R> devtools::install_github('misasa/chelyabinsk')
     R> devtools::install_github('misasa/MedusaRClient')
 
 To run the application issue following command.
-
-    R> library('devtools')
-    R> runApp('maps')
+    
+    $ R
+    R> library(shiny)
+    R> global_id <- '20150916080446-153762'
+    R> runApp('map')
