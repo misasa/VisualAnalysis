@@ -162,7 +162,7 @@ server <- function(input, output, session) {
     record <- NULL
     if (!(is.null(id))){
       withProgress(message = paste('Getting', id), value = 0, {
-        Record <- Resource$new("records")
+        Record <- MedusaRClient::Resource$new("records", con)
         record <- Record$find_by_global_id(id)
         incProgress(0.9)
       })
