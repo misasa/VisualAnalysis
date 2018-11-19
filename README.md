@@ -4,11 +4,11 @@ R/Shiny interface to Medusa for visualizing geochemical data
 
 # Description
 
-[R][r]/[Shiny][shiny] interface to [Medusa][medusa] for visualizing geochemical data. This app uses [Leaflet][leaflet], which is the leading open-source JavaScript library for interactive maps, and [chelyabinsk][] to visualize geochemical dataset served by Medusa.
+[R][r]/[Shiny][shiny] interface to [rails project -- medusa][medusa] for visualizing geochemical data. This app uses [Leaflet][leaflet], which is the leading open-source JavaScript library for interactive maps, and [r package -- chelyabinsk][] to visualize geochemical dataset served by Medusa.
 
-[medusa]: https://github.com/misasa/medusa/        "Medusa"
+[rails project -- medusa]: https://github.com/misasa/medusa/        "Medusa"
 [leaflet]: https://leafletjs.com/ "Leaflet"
-[chelyabinsk]: https://github.com/misasa/chelyabinsk   "Chelyabinsk"
+[r package -- chelyabinsk]: https://github.com/misasa/chelyabinsk   "Chelyabinsk"
 [shiny]: http://shiny.rstudio.com/ "Shiny"
 [r]: https://www.r-project.org/ "R"
 
