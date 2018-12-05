@@ -8,7 +8,6 @@ R/Shiny interface to Medusa for visualizing geochemical data
 
 # Dependency
 
-## [GNU R](https://www.r-project.org/)
 ## [r package -- chelyabinsk](https://github.com/misasa/chelyabinsk)
 ## [r package -- MedusaRClient](https://github.com/misasa/MedusaRClient)
 
