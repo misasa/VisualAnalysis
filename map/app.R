@@ -7,6 +7,9 @@ library(MedusaRClient)
 library(chelyabinsk)
 source("../lib/func.R")
 
+#global_id <- "20120224095412-627-620"
+#global_id <- "20190110091940-824859"
+
 config <- yaml.load_file("../config/medusa.yaml")
 con <- Connection$new(list(uri=config$uri, user=config$user, password=config$password))
 
@@ -319,11 +322,17 @@ server <- function(input, output, session) {
   })
   
   colorpal <- reactive({
+    pal <- NULL  
     df <- get_df()
     item <- input$item
     if (!is.null(item) && (item %in% names(df))){
-      colorNumeric("Spectral", df[item])
+      tryCatch({
+        pal <- colorNumeric("Spectral", df[item])
+      },error= function(e){
+        print(e)
+      })
     }
+    pal
   })
   
   output$mymap <- renderLeaflet({
@@ -410,7 +419,7 @@ server <- function(input, output, session) {
         data <- filteredData()
         pal <- colorpal()
         item <- input$item
-        if (!is.null(data) && nrow(data) > 0 && !is.null(pal) && !is.null(item) && (item %in% names(data))){
+        if (!is.null(data) && nrow(data) > 0 && !is.null(item) && (item %in% names(data))){
           m <- leafletProxy("mymap", data = data)
           m <- clearShapes(m)
           m <- addGeoJSON(m, grid, color = "#FF0000", weight = 1, group = "grid")
@@ -418,10 +427,14 @@ server <- function(input, output, session) {
             m <- addMarkers(m)
             m <- addCircles(m, radius = ~radius, weight = 1, color = "#777777", fillColor = ~pal(item), fillOpacity = 0.7, popup = ~paste0("lat:", lat,", lng:", lng, ", radius:", radius))
           } else {
-            m <- addCircles(m, radius = ~radius, weight = 1, color = "#777777", fillColor = ~pal(item), fillOpacity = 0.7, popup = ~paste0("x:", x_vs,", y:", y_vs, ", radius:", radius))
+            m <- addMarkers(m)
+#            if(!is.null(pal)){
+#              m <- addCircles(m, radius = ~radius, weight = 1, color = "#777777", fillColor = ~pal(item), fillOpacity = 0.7, popup = ~paste0("x:", x_vs,", y:", y_vs, ", radius:", radius))
+#            }
           }
           m
         } else {
+          print("b")
           m <- leafletProxy("mymap")
           m <- clearShapes(m)
           m <- addGeoJSON(m, grid, color = "#FF0000", weight = 1, group = "grid")
@@ -435,16 +448,17 @@ server <- function(input, output, session) {
   observe({
     surface <- get_surface()
     data <- get_df()
-    
     if (! (is.null(surface))){
       pal <- colorpal()
       item <- input$item
-      if (!is.null(data) && nrow(data) > 0 && !is.null(pal) && !is.null(item) && (item %in% names(data))){
+      if (!is.null(data) && nrow(data) > 0 && !is.null(item) && (item %in% names(data))){
         proxy <- leafletProxy("mymap", data = data)
         proxy <- clearControls(proxy)
-        proxy <- addLegend(proxy, position = "topleft",
+        if(!is.null(pal)){
+          proxy <- addLegend(proxy, position = "topleft",
                            title = item, pal = pal, values =c(max(data[item], na.rm = TRUE),min(data[item], na.rm = TRUE)), labFormat = labelFormat(digits=7)
-        )
+          )
+        }
       }
     }
   })
