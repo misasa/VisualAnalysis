@@ -8,7 +8,7 @@ library(chelyabinsk)
 source("../lib/func.R")
 
 #global_id <- "20120224095412-627-620"
-global_id <- "20190110091940-824859"
+#global_id <- "20190110091940-824859"
 #global_id <- "20160820170853-707954"
 
 config <- yaml.load_file("../config/medusa.yaml")
