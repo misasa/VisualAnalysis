@@ -8,7 +8,8 @@ library(chelyabinsk)
 source("../lib/func.R")
 
 #global_id <- "20120224095412-627-620"
-#global_id <- "20190110091940-824859"
+global_id <- "20190110091940-824859"
+#global_id <- "20160820170853-707954"
 
 config <- yaml.load_file("../config/medusa.yaml")
 con <- Connection$new(list(uri=config$uri, user=config$user, password=config$password))
@@ -291,7 +292,7 @@ server <- function(input, output, session) {
     df <- get_df()
     surface <- get_surface()
     if (!(is.null(surface))){
-      sliderInput("size", "Spots size",min=0, max=1000, value=200)
+      sliderInput("size", "Spots size",min=0, max=1000, value=surface$length/100)
     }
   })
   
@@ -366,7 +367,7 @@ server <- function(input, output, session) {
                               overlayGroups = c("overlays", "grid"),
                               position = "topleft")
           m <- hideGroup(m, c("overlays", "grid"))
-          m <- onRender(m, "function(el, x) { L.control.myscale({length:15081.65}).addTo(this);}")
+          m <- onRender(m, paste("function(el, x) { L.control.myscale({length:", surface$length, "}).addTo(this);}"))
           incProgress(0.9)
         }
         m <- fitBounds(m, lng1 = min(data$lng, na.rm = TRUE), lat1 = min(data$lat, na.rm = TRUE), lng2 = max(data$lng, na.rm = TRUE), lat2 = max(data$lat, na.rm = TRUE))
@@ -428,13 +429,12 @@ server <- function(input, output, session) {
             m <- addCircles(m, radius = ~radius, weight = 1, color = "#777777", fillColor = ~pal(item), fillOpacity = 0.7, popup = ~paste0("lat:", lat,", lng:", lng, ", radius:", radius))
           } else {
             m <- addMarkers(m)
-#            if(!is.null(pal)){
-#              m <- addCircles(m, radius = ~radius, weight = 1, color = "#777777", fillColor = ~pal(item), fillOpacity = 0.7, popup = ~paste0("x:", x_vs,", y:", y_vs, ", radius:", radius))
-#            }
+            if(!is.null(pal)){
+              m <- addCircles(m, radius = ~radius, weight = 1, color = "#777777", fillColor = ~pal(item), fillOpacity = 0.7, popup = ~paste0("x:", x_vs,", y:", y_vs, ", radius:", radius))
+            }
           }
           m
         } else {
-          print("b")
           m <- leafletProxy("mymap")
           m <- clearShapes(m)
           m <- addGeoJSON(m, grid, color = "#FF0000", weight = 1, group = "grid")
