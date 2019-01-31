@@ -7,6 +7,7 @@ script.name <- sub(file.arg.name,"",initial.options[grep(file.arg.name, initial.
 script.basename <- dirname(script.name)
 config_path <- file.path(script.basename,"../config/medusa.yaml")
 config <- yaml.load_file(config_path)
+con <- Connection$new(list(uri=config$uri, user=config$user, password=config$password))
 rds_path <- config$RDS
 
 json_path <- commandArgs(trailingOnly=TRUE)[1]
