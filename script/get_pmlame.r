@@ -11,6 +11,6 @@ con <- Connection$new(list(uri=config$uri, user=config$user, password=config$pas
 rds_path <- config$RDS
 
 json_path <- commandArgs(trailingOnly=TRUE)[1]
-obj <- Pmlame$new()
+obj <- Pmlame$new(con)
 df <- obj$read_local(json_path)
 saveRDS(df,rds_path)
