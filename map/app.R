@@ -10,6 +10,7 @@ source("../lib/func.R")
 #global_id <- "20120224095412-627-620"
 #global_id <- "20190110091940-824859"
 #global_id <- "20160820170853-707954"
+#global_id <- "20190115102242-432018"
 
 config <- yaml.load_file("../config/medusa.yaml")
 con <- Connection$new(list(uri=config$uri, user=config$user, password=config$password))
@@ -53,11 +54,11 @@ ui <- shinyUI(bootstrapPage(
 ))
 
 server <- function(input, output, session) {
-  
+
   getQuery <- function(){
     parseQueryString(session$clientData$url_search)
   }
-  
+
   get_surface <- eventReactive(input$surface,{
     selection <- as.numeric(input$surface)
     surface <- NULL
@@ -67,7 +68,7 @@ server <- function(input, output, session) {
     }
     surface
   })
-  
+
   get_df <- eventReactive(input$surface,{
     surface <- get_surface()
     object <- getObject()
@@ -75,7 +76,7 @@ server <- function(input, output, session) {
     tab <- getDataFrame()
     if (is.null(surface)){
       df <- tab
-    } else { 
+    } else {
       tab <- tab[(tab$surface_id == surface$global_id),]
       if (nrow(tab) > 0){
         if (surface$globe){
@@ -87,7 +88,7 @@ server <- function(input, output, session) {
     }
     df
   })
-  
+
   get_grid <- eventReactive(input$surface, {
     surface <- get_surface()
     grid = NA
@@ -102,7 +103,7 @@ server <- function(input, output, session) {
       xs <- seq(from = ceiling(left/interval)*interval, to = floor(right/interval)*interval, by = interval)
       ys <- seq(from = ceiling(bottom/interval)*interval, to = floor(upper/interval)*interval, by = interval)
       features <- list()
-  
+
       x_vs = numeric(0)
       y_vs = numeric(0)
       for(i in 1:length(xs)){
@@ -110,7 +111,7 @@ server <- function(input, output, session) {
         y_vs <- append(y_vs, c(bottom, 0.0, upper))
       }
       df_xs <- addLatLng(data.frame(x_vs = x_vs, y_vs = y_vs), surface$center, surface$length)
-    
+
       x_vs = numeric(0)
       y_vs = numeric(0)
       for(i in 1:length(ys)){
@@ -118,7 +119,7 @@ server <- function(input, output, session) {
         y_vs <- append(y_vs, rep(ys[i],3))
       }
       df_ys <- addLatLng(data.frame(x_vs = x_vs, y_vs = y_vs), surface$center, surface$length)
-    
+
       for(i in 1:length(xs)){
         sdf <- subset(df_xs, x_vs == xs[i], select = c(lng,lat), drop = TRUE)
         coordinates <- list()
@@ -131,7 +132,7 @@ server <- function(input, output, session) {
         feature <- list(type="Feature",geometry=geometry,properties=property)
         features[[i]] <- feature
       }
-    
+
       for(i in 1:length(ys)){
         sdf <- subset(df_ys, y_vs == ys[i], select = c(lng,lat), drop = TRUE)
         coordinates <- list()
@@ -148,7 +149,7 @@ server <- function(input, output, session) {
     }
     grid
   })
-  
+
   getID <- reactive({
     query <- getQuery()
     id <- NULL
@@ -160,7 +161,7 @@ server <- function(input, output, session) {
     }
     id
   })
-  
+
   getObject <- reactive({
     id <- getID()
     record <- NULL
@@ -183,9 +184,9 @@ server <- function(input, output, session) {
     },error= function(e){
       print(e)
     })
-        
+
     if ((is.null(object))){
-      tab <- NULL  
+      tab <- NULL
     } else {
       withProgress(message = 'Getting data', value = 0, {
         incProgress(0.2)
@@ -221,14 +222,14 @@ server <- function(input, output, session) {
       surfaces
     }
   })
-      
+
   filteredData <- reactive({
     df <- get_df()
     surface <- get_surface()
     if (!(is.null(surface))){
       item <- input$item
       if (is.null(input$size)){
-        size <- 100 
+        size <- 100
       } else {
         size <- input$size
       }
@@ -246,7 +247,7 @@ server <- function(input, output, session) {
     }
     df
   })
-  
+
   output$idControls <- renderUI({
     iid <- getID()
     surfaces <- getSurfaces()
@@ -266,13 +267,13 @@ server <- function(input, output, session) {
     }
     selectInput("surface", "Map", vars, selected = selected, selectize = FALSE)
   })
-  
+
   output$itemControls <- renderUI({
     surface <- get_surface()
     if (!(is.null(surface))){
       df <- get_df()
       items <- names(df)
-      
+
       rm_items <- c("lng", "lat", "x_image", "y_image", "x_vs", "y_vs")
       for (i in 1:length(items)){
         if (!(is.numeric(df[,items[i]]))){
@@ -284,18 +285,18 @@ server <- function(input, output, session) {
           items <- items[-which(items %in% rm_items)]
         }
       }
-      selectInput("item","Spots color",items, selectize = FALSE)
+      selectInput("item","Chem",items, selectize = FALSE)
     }
   })
-  
+
   output$spotSizeControls <- renderUI({
     df <- get_df()
     surface <- get_surface()
     if (!(is.null(surface))){
-      sliderInput("size", "Spots size",min=0, max=1000, value=surface$length/100)
+      sliderInput("size", "Size",min=0, max=1000, value=surface$length/100)
     }
   })
-  
+
   output$rangeControls <- renderUI({
     df <- get_df()
     surface <- get_surface()
@@ -306,7 +307,7 @@ server <- function(input, output, session) {
       }
     }
   })
-  
+
   output$plotControls <- renderUI({
     pmlame <- get_df()
     if (class(pmlame) != "try-error" && length(pmlame)){
@@ -321,9 +322,9 @@ server <- function(input, output, session) {
       checkboxInput("legend", "Legend", value = FALSE, width = NULL)
     }
   })
-  
+
   colorpal <- reactive({
-    pal <- NULL  
+    pal <- NULL
     df <- get_df()
     item <- input$item
     if (!is.null(item) && (item %in% names(df))){
@@ -335,7 +336,7 @@ server <- function(input, output, session) {
     }
     pal
   })
-  
+
   output$mymap <- renderLeaflet({
     surface <- get_surface()
     data <- get_df()
@@ -375,7 +376,7 @@ server <- function(input, output, session) {
       })
     }
   })
-  
+
   dataInBounds <- reactive({
     df <- get_df()
     if (is.null(df))
@@ -390,7 +391,7 @@ server <- function(input, output, session) {
            lat >= latRng[1] & lat <= latRng[2] &
              lng >= lngRng[1] & lng <= lngRng[2])
   })
-  
+
   output$cbkplot <- renderPlot({
     surface <- get_surface()
     withProgress(message = paste('Rendering plot'), value = 0, {
@@ -410,7 +411,7 @@ server <- function(input, output, session) {
       incProgress(0.9)
       })
   }, bg="transparent")
-  
+
   observe({
     surface <- get_surface()
     if (! (is.null(surface))){
@@ -444,7 +445,7 @@ server <- function(input, output, session) {
       })
     }
   })
-  
+
   observe({
     surface <- get_surface()
     data <- get_df()
