@@ -213,12 +213,20 @@ server <- function(input, output, session) {
     if (!(is.null(tab$surface_id))){
       surface_ids <- unique(tab$surface_id[is.na(tab$surface_id) == F])
       withProgress(message = 'Getting maps', value = 0, {
-        Surface <- MedusaRClient::Resource$new("surfaces", con)
+        #Surface <- MedusaRClient::Resource$new("surfaces", con)
+        #surfaces <- Surface$find_all()
+        #surfaces <- surfaces[(surfaces$global_id %in% surface_ids),]
         incProgress(0.1)
-        surfaces <- Surface$find_all()
+        Record <- MedusaRClient::Resource$new("records", con)
+        records <- list()
+        for(i in 1:length(surface_ids)){
+          global_id <- surface_ids[i]
+          record <- Record$find_by_global_id(global_id)
+          records[[i]] <- record
+        }
         incProgress(0.8)
       })
-      surfaces <- surfaces[(surfaces$global_id %in% surface_ids),]
+      surfaces <- fromJSON(toJSON(records, auto_unbox = TRUE))
       surfaces
     }
   })
