@@ -7,6 +7,7 @@ library(jsonlite)
 library(MedusaRClient)
 library(chelyabinsk)
 source("../lib/func.R")
+#global_id <- "20200311132716-107216"
 #global_id <- "20190424160427-729097"
 #global_id <- "20200409105742-366515"
 #global_id <- "20190306171521-621773"
@@ -369,44 +370,36 @@ server <- function(input, output, session) {
         } else {
           base_images <- map_data$base_images[[1]]
           if (length(base_images) > 0){
-             
             for(i in 1:length(base_images$id)){
               base_image <- base_images[i,]
               url_template <- paste(map_data$base_url, map_data$global_id, '/', base_image$id, '/{z}/{x}_{y}.png', sep="")
-              m <- addTiles(m, urlTemplate = url_template, group = "base")
+              m <- addTiles(m, urlTemplate = url_template, group = base_image$name)
             }
           }
-          
+          overlays <- c()
+          if ('top' %in% names(map_data$images)){
+            overlays <- append(overlays, 'top')
+            images <- map_data$images["top"][[1]][[1]]
+            for(j in 1:length(images$id)){
+              url_template <- paste(map_data$base_url, map_data$global_id, '/', images$id[j], '/{z}/{x}_{y}.png', sep="")
+              m <- addTiles(m, urlTemplate = url_template, group = 'top')
+            }
+          }
           layer_groups <- map_data$layer_groups[[1]]
-          diffs <- setdiff(names(map_data$images),layer_groups$name)
-          if (length(diffs)){
-            for(i in 1:length(diffs)){
-              images <- map_data$images[diffs[i]][[1]][[1]]
+          if (length(layer_groups) > 0){
+            overlays <- append(overlays, layer_groups$name)
+            for(i in 1:length(layer_groups$id)){
+              images <- map_data$images[layer_groups$name[i]][[1]][[1]]
               for(j in 1:length(images$id)){
                 url_template <- paste(map_data$base_url, map_data$global_id, '/', images$id[j], '/{z}/{x}_{y}.png', sep="")
-                m <- addTiles(m, urlTemplate = url_template, group = "top")
+                m <- addTiles(m, urlTemplate = url_template, group = layer_groups$name[i])
               }
             }
           }
-          for(i in 1:length(layer_groups$id)){
-            images <- map_data$images[layer_groups$name[i]][[1]][[1]]
-            for(j in 1:length(images$id)){
-              url_template <- paste(map_data$base_url, map_data$global_id, '/', images$id[j], '/{z}/{x}_{y}.png', sep="")
-              m <- addTiles(m, urlTemplate = url_template, group = layer_groups$name[i])
-            }
-          }
-          #url_template <- unlist(surface$url_for_tiles)[1]
-          #m <- addTiles(m, urlTemplate = url_template, group = "base")
-          #if (length(unlist(surface$url_for_tiles)) > 1){
-          #  for(i in 1:length(unlist(surface$url_for_tiles))){
-          #    url_template <- unlist(surface$url_for_tiles)[i]
-          #    m <- addTiles(m, urlTemplate = url_template, group = "overlays")
-          #  }
-          #}
           if (length(base_images) > 0){
             m <- addLayersControl(m,
-                              baseGroups = c("base"),
-                              overlayGroups = c("top", layer_groups$name, "grid"),
+                              baseGroups = base_images$name,
+                              overlayGroups = append(overlays, "grid"),
                               position = "topleft")
           } else {
             m <- addLayersControl(m,
