@@ -271,10 +271,12 @@ server <- function(input, output, session) {
       selected <- 1
       for(i in 1:length(surfaces$global_id)){
         global_id <- surfaces[i,]$global_id
-        if (!is.null(iid) && global_id == iid){
-          selected <- i
+        if (!is.na(global_id)){
+          if (!is.null(iid) && global_id == iid){
+            selected <- i
+          }
+          vars[surfaces[i, ]$name] = i
         }
-        vars[surfaces[i, ]$name] = i
       }
     }
     selectInput("surface", "Map", vars, selected = selected, selectize = FALSE)
@@ -373,7 +375,8 @@ server <- function(input, output, session) {
             for(i in 1:length(base_images$id)){
               base_image <- base_images[i,]
               url_template <- paste(map_data$base_url, map_data$global_id, '/', base_image$id, '/{z}/{x}_{y}.png', sep="")
-              m <- addTiles(m, urlTemplate = url_template, group = base_image$name)
+              options <- tileOptions(maxNativeZoom = base_image$max_zoom)
+              m <- addTiles(m, urlTemplate = url_template, options = options, group = base_image$name)
             }
           }
           overlays <- c()
@@ -382,7 +385,8 @@ server <- function(input, output, session) {
             images <- map_data$images["top"][[1]][[1]]
             for(j in 1:length(images$id)){
               url_template <- paste(map_data$base_url, map_data$global_id, '/', images$id[j], '/{z}/{x}_{y}.png', sep="")
-              m <- addTiles(m, urlTemplate = url_template, group = 'top')
+              options <- tileOptions(maxNativeZoom = images$max_zoom[j])
+              m <- addTiles(m, urlTemplate = url_template, options = options, group = 'top')
             }
           }
           layer_groups <- map_data$layer_groups[[1]]
@@ -392,7 +396,8 @@ server <- function(input, output, session) {
               images <- map_data$images[layer_groups$name[i]][[1]][[1]]
               for(j in 1:length(images$id)){
                 url_template <- paste(map_data$base_url, map_data$global_id, '/', images$id[j], '/{z}/{x}_{y}.png', sep="")
-                m <- addTiles(m, urlTemplate = url_template, group = layer_groups$name[i])
+                options <- tileOptions(maxNativeZoom = images$max_zoom[j])
+                m <- addTiles(m, urlTemplate = url_template, options = options, group = layer_groups$name[i])
               }
             }
           }
