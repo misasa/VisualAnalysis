@@ -7,6 +7,7 @@ library(jsonlite)
 library(MedusaRClient)
 library(chelyabinsk)
 source("../lib/func.R")
+#global_id <- "20200318094021-774984"
 #global_id <- "20200219105529-203562"
 #global_id <- "20191212092751-166561"
 #global_id <- "20150914105617-117249"
@@ -439,7 +440,7 @@ server <- function(input, output, session) {
         if ((lng1 == lng2) && (lat1 == lat2)){
           m <- setView(m, lng1, lat1, maxZoom)
         } else {
-          m <- fitBounds(m, lng1 = lng1, lat1 = lat1, lng2 = lng2, lat2 = lat2, option = list(maxZoom = maxZoom))
+          m <- fitBounds(m, lng1 = lng1, lat1 = lat1, lng2 = lng2, lat2 = lat2)
         }
         m
       })
