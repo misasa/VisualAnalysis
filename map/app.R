@@ -7,6 +7,12 @@ library(jsonlite)
 library(MedusaRClient)
 library(chelyabinsk)
 source("../lib/func.R")
+#global_id <- "20200219105529-203562"
+#global_id <- "20191212092751-166561"
+#global_id <- "20150914105617-117249"
+#global_id <- "20200221094909-267444"
+#global_id <- "20190607100630-468419"
+#global_id <- "20200117092729-333909"
 #global_id <- "20200311132716-107216"
 #global_id <- "20190424160427-729097"
 #global_id <- "20200409105742-366515"
@@ -15,9 +21,9 @@ source("../lib/func.R")
 #global_id <- "20190110091940-824859"
 #global_id <- "20160820170853-707954"
 #global_id <- "20190115102242-432018"
-
+maxZoom <- 12
 config <- yaml.load_file("../config/medusa.yaml")
-con <- Connection$new(list(uri=config$uri, user=config$user, password=config$password))
+con <- Connection$new(list(protocol=config$protocol, uri=config$uri, user=config$user, password=config$password))
 
 absPanel_plot <- absolutePanel(
   id = "plot-controls", class = "panel panel-default", fixed = FALSE,
@@ -326,14 +332,21 @@ server <- function(input, output, session) {
     pmlame <- get_df()
     if (class(pmlame) != "try-error" && length(pmlame)){
       catgs <- cbk.category(pmlame)
-      selectInput("category", "Category", catgs[catgs != "spots"], selectize = FALSE)
+      if (!is.null(catgs)){
+        selectInput("category", "Category", catgs[catgs != "spots"], selectize = FALSE)
+      } else {
+        "No category is available."
+      }
     }
   })
 
   output$legendControls <- renderUI({
     pmlame <- get_df()
     if (class(pmlame) != "try-error" && length(pmlame)){
-      checkboxInput("legend", "Legend", value = FALSE, width = NULL)
+      catgs <- cbk.category(pmlame)
+      if (!is.null(catgs)){
+        checkboxInput("legend", "Legend", value = FALSE, width = NULL)
+      }
     }
   })
 
@@ -369,6 +382,9 @@ server <- function(input, output, session) {
         m <- leaflet()
         if (surface$globe) {
           m <- addTiles(m, group = "base")
+          m <- addLayersControl(m,
+                                overlayGroups = c("grid"),
+                                position = "topleft")
         } else {
           base_images <- map_data$base_images[[1]]
           if (length(base_images) > 0){
@@ -411,11 +427,20 @@ server <- function(input, output, session) {
                                   overlayGroups = c("top", layer_groups$name, "grid"),
                                   position = "topleft")
           }
-          m <- hideGroup(m, c("grid"))
           m <- onRender(m, paste("function(el, x) { L.control.myscale({length:", surface$length, "}).addTo(this);}"))
           incProgress(0.9)
         }
-        m <- fitBounds(m, lng1 = min(data$lng, na.rm = TRUE), lat1 = min(data$lat, na.rm = TRUE), lng2 = max(data$lng, na.rm = TRUE), lat2 = max(data$lat, na.rm = TRUE))
+        m <- hideGroup(m, c("grid"))
+        lng1 <- min(data$lng, na.rm = TRUE)
+        lat1 <- min(data$lat, na.rm = TRUE)
+        lng2 <- max(data$lng, na.rm = TRUE)
+        lat2 <- max(data$lat, na.rm = TRUE)
+        #maxZoom <- 15
+        if ((lng1 == lng2) && (lat1 == lat2)){
+          m <- setView(m, lng1, lat1, maxZoom)
+        } else {
+          m <- fitBounds(m, lng1 = lng1, lat1 = lat1, lng2 = lng2, lat2 = lat2, option = list(maxZoom = maxZoom))
+        }
         m
       })
     }
@@ -438,6 +463,9 @@ server <- function(input, output, session) {
 
   output$cbkplot <- renderPlot({
     surface <- get_surface()
+    if (is.null(input$category)){
+      return()
+    }
     withProgress(message = paste('Rendering plot'), value = 0, {
       incProgress(0.1)
       if (!(is.null(surface))){
