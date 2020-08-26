@@ -1,0 +1,5 @@
+---
+uri: medusa9.misasa.okayama-u.ac.jp/pub/
+user: guest
+password: guest
+RDS: '/srv/shiny-server/visual_analysis/data/analyses.rds'
