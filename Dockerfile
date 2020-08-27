@@ -1,6 +1,5 @@
 FROM rocker/rstudio:3.3.1
 RUN export ADD=shiny && bash /etc/cont-init.d/add
-
 RUN apt-get update \
   && apt-get install -y --no-install-recommends \
     lbzip2 \
@@ -58,3 +57,10 @@ RUN echo 'export RBENV_ROOT="/opt/rbenv"' >> /etc/profile \
 && gem update --system 2.7.8 \
 && gem source -a http://dream.misasa.okayama-u.ac.jp/rubygems/ \
 && gem install casteml
+WORKDIR /srv/shiny-server/visual_analysis
+COPY chelyabinsk chelyabinsk
+COPY config config
+COPY js js
+COPY lib lib
+COPY map map
+COPY script script
