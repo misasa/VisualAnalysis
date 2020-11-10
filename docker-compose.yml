@@ -4,7 +4,7 @@ services:
   shiny:
     container_name: visual_analysis
     environment:
-      - PASSWORD=rstudio
+      - PASSWORD=rstudi0
     # To build the image locally, comment out "image" below, and uncomment
     # "build" and the lines indented under it.
     # image: rocker/shiny
@@ -21,7 +21,7 @@ services:
     #   - APPLICATION_LOGS_TO_STDOUT=false
     ports:
       - '3838:3838'
-#      - '8787:8787'
+      - '8787:8787'
     volumes:
 #      - './config/.orochirc.default:/home/rstudio/.orochirc'
       - './log:/var/log/shiny-server'
@@ -31,6 +31,8 @@ services:
       - './lib:/srv/shiny-server/visual_analysis/lib'
       - './chelyabinsk:/srv/shiny-server/visual_analysis/chelyabinsk'
       - './map:/srv/shiny-server/visual_analysis/map'
+#      - './data:/srv/shiny-server/visual_analysis/data'
+      - './:/home/rstudio/visual_analysis'
       # Comment the line below out for initial testing. With it commented out,
       # going to localhost:80 in one's web browser will show a "Welcome to
       # Shiny Server!" diagnostics page.

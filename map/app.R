@@ -88,6 +88,9 @@ server <- function(input, output, session) {
     if (is.null(surface)){
       df <- tab
     } else {
+      tab <- tab[!is.na(tab$surface_id),]
+      tab <- tab[!is.nan(tab$surface_id),]
+      tab <- tab[!is.null(tab$surface_id),]
       tab <- tab[(tab$surface_id == surface$global_id),]
       if (nrow(tab) > 0){
         if (surface$globe){
@@ -431,7 +434,8 @@ server <- function(input, output, session) {
           m <- onRender(m, paste("function(el, x) { L.control.myscale({length:", surface$length, "}).addTo(this);}"))
           incProgress(0.9)
         }
-        m <- hideGroup(m, c("grid"))
+
+        m <- hideGroup(m, c("top", "grid"))
         lng1 <- min(data$lng, na.rm = TRUE)
         lat1 <- min(data$lat, na.rm = TRUE)
         lng2 <- max(data$lng, na.rm = TRUE)
