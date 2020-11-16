@@ -413,11 +413,13 @@ server <- function(input, output, session) {
           if (length(layer_groups) > 0){
             overlays <- append(overlays, layer_groups$name)
             for(i in 1:length(layer_groups$id)){
-              images <- map_data$images[layer_groups$name[i]][[1]][[1]]
-              for(j in 1:length(images$id)){
-                url_template <- paste(map_data$base_url, map_data$global_id, '/', images$id[j], '/{z}/{x}_{y}.png', sep="")
-                options <- tileOptions(maxNativeZoom = images$max_zoom[j])
-                m <- addTiles(m, urlTemplate = url_template, options = options, group = layer_groups$name[i])
+              if (layer_groups$name[i] %in% names(map_data$images)){
+                images <- map_data$images[layer_groups$name[i]][[1]][[1]]
+                for(j in 1:length(images$id)){
+                  url_template <- paste(map_data$base_url, map_data$global_id, '/', images$id[j], '/{z}/{x}_{y}.png', sep="")
+                  options <- tileOptions(maxNativeZoom = images$max_zoom[j])
+                  m <- addTiles(m, urlTemplate = url_template, options = options, group = layer_groups$name[i])
+                }
               }
             }
           }
