@@ -51,8 +51,8 @@ RUN echo 'export RBENV_ROOT="/opt/rbenv"' >> /etc/profile \
 && echo 'eval "$(rbenv init -)"' >> /etc/profile.d/rbenv.sh \
 && echo 'eval "$(rbenv init -)"' >> /etc/profile \
 && sh /etc/profile.d/rbenv.sh \
-&& rbenv install 2.2.2 \
-&& rbenv global 2.2.2 \
+&& rbenv install 2.6.6 \
+&& rbenv global 2.6.6 \
 && echo 'gem: --no-document' >> ~/.gemrc && cp ~/.gemrc /etc/gemrc && chmod uog+r /etc/gemrc \
 && gem update --system 2.7.8 \
 && gem source -a http://dream.misasa.okayama-u.ac.jp/rubygems/ \
